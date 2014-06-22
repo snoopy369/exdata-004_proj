@@ -1,0 +1,33 @@
+Codebook for means_df_long
+========================================================
+```{r}
+means_df_long<-read.csv("UCIHAR_means_of_means_stds.txt",sep=" ")
+
+```
+
+**Variables**
+```{r}
+data.frame(variable.name=c(names(means_df_long)),
+                                label=c("Subject Number (1:30)",
+                                        "Activity Code (1:6)",
+                                        "Activity Type (text explanation of Activity Code)",
+                                        "Variable of Interest",
+                                        "Mean of variable means",
+                                        "Mean of variable standard deviations")
+)
+```
+
+**Unique values of variable**
+```{r}
+unique(means_df_long$variable)
+```
+
+**Unique values of Activity Type**
+```{r}
+unique(means_df_long$activityType)
+```
+
+**Summary of dataset**
+```{r}
+summary(means_df_long)
+```

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>ReadMe for run_analysis.R</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>ReadMe for run_analysis.R</h1>
+
+<h1><strong>Purpose</strong></h1>
+
+<p>The purpose of this analysis is to obtain the UCI Human Activity Recognition dataset (available at <a href="http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones">http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones</a> ), combine training and test datasets, subset the variables available to include the mean and standard deviation metrics only, and summarize those variables for each subject and activity.</p>
+
+<p>For each of training (/train) and test (/test), we first load the data (the X, Y, and Subject datasets) using <code>read.table</code>.  We apply labels from the features.txt file, using <code>gsub</code> to remove parentheses and dashes, removing the former and converting dashes to periods, merge in the Y and Subject columns using <code>cbind</code>, and use the activity_labels.txt values to label the activity codes with useful language (<code>activityType</code> is the plain language value, <code>activityCode</code> is the code).  Finally, we combine the training and test datatables into one dataframe.</p>
+
+<p>Next, we determine which variables we will keep for the mean and standard deviation columns. We determine which variables have .mean. or .mean{end of string} (needing the complexity as some variables include &ldquo;Mean&rdquo; without being actual means), and similarly which have std (we do not need to check for end of string or dots, as no variables have std in them without being of interest).  At this step we have 33 variables of interest in each of the means and standard deviation lists (for a total of 66 variables), plus the three id variables <code>subject</code>, <code>activityCode</code>, and <code>activityType</code>).<br/>
+We then filter the dataframe by these columns, creating <code>df_mean</code> and <code>df_std</code> dataframes.  Finally, we melt these dataframes (using <code>melt</code> from <code>reshape</code>) and combine then using <code>cbind</code>, keeping only the value from the <code>df_std</code> dataframe.  This gives us a single data frame with 339867 observations and 6 variables.
+We then remove the <code>.mean</code> from the variable column to make it more generic, and change <code>f</code> at the start to <code>frequency</code> and <code>t</code> to <code>time</code> to make those more clear.  We reorder the data frame to make it more useful for future users, ordering by subject, activity, and variable.</p>
+
+<p>To perform the last step, the summarization, we summarize by subject*activity using <code>ddply</code> from the <code>plyr</code> package.  This gives us 180 values for each variable (30 subjects, 6 activities) , for a total of 5940 observations.</p>
+
+<h1></h1>
+
+<p>Packages required in addition to base: </p>
+
+<ul>
+<li><code>plyr</code></li>
+<li><code>reshape</code></li>
+</ul>
+
+<p>Data frames of interest produced: </p>
+
+<ul>
+<li><code>df_UCIHAR</code> (complete dataframe of all variables, combining test and training data)</li>
+<li><code>df_long</code> (non-summarized, filtered dataset of mean/std measurements) </li>
+<li><code>means_df_long</code>(summarized dataset of mean/std measurements, summarized by mean)</li>
+</ul>
+
+</body>
+
+</html>
+
